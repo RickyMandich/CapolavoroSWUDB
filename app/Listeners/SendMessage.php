@@ -12,8 +12,8 @@ class SendMessage implements ShouldQueue{
      * Handle the event.
      */
     public function handle(MessageCreated $event): void{
-        $botToken = env('TELEGRAM_BOT_TOKEN', '7717265706:AAH5chf4Ae3vsFSt7158K-RFWdh9BudnnQc');
-        $chatId = env('TELEGRAM_CHAT_ID', '5533337157');
+        $botToken = env('TELEGRAM_BOT_TOKEN');
+        $chatId = env('TELEGRAM_CHAT_ID');
         
         try {
             Http::withoutVerifying()->get("https://api.telegram.org/bot{$botToken}/sendMessage", [
