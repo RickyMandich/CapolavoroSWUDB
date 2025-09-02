@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="tutorial.Main" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="tutorial.Main" />
+    <module name="BotUnlimitedDB" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
