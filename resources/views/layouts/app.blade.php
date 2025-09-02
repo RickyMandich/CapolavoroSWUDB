@@ -13,13 +13,42 @@
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- inclusion -->
     @yield('include')
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+
+    @livewireStyles
 </head>
 <style>
+    .innerCarta{
+        height: 100%;
+    }
+    
+    .comune{
+        color: #8B4513;
+    }
+
+    .noncomune{
+        color: white;
+    }
+
+    .rara{
+        color: yellow;
+    }
+
+    .leggendaria{
+        color: lightblue;
+    }
+
+    .speciale{
+        color: #a6a594;
+    }
+
     .bg-custom-light{
         background-color: #555555;
     }
@@ -41,21 +70,25 @@
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+                
+                <form action="{{ route('carte') }}">
+                    <input class="form-control" type="text" placeholder="{{ __("custom.searchCard") }}" name="nome" id="nome">
+                </form>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('mazzi') }}">{{ __('custom.mazzi') }}</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link" href="{{ route('carte') }}">{{ __('custom.carte') }}</a>
                         </li>
                         <li class="nav-item">
-                            <form action="{{ route('carte') }}">
-                                <input class="form-control" type="text" placeholder="{{ __("custom.searchCard") }}" name="nome" id="nome">
-                            </form>
-                        </li> 
+                            <a class="nav-link" href="{{ route('mazzi') }}">{{ __('custom.mazzi') }}</a>
+                        </li>
+                        @auth
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('collezione') }}">{{ __('custom.Collezione') }}</a>
+                        </li>
+                        @endauth
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -69,7 +102,7 @@
                             @endif
 
                             @if (Route::has('register'))
-                                <li class="nav-item">
+                                <li id="test" class="nav-item">
                                     <a class="nav-link" href="{{ route('register') }}">{{ __('custom.Register') }}</a>
                                 </li>
                             @endif
@@ -81,14 +114,42 @@
 
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="{{ route('dashboard') }}">
-                                    {{ __('custom.Dashboard') }}
+                                    <i class="fas fa-tachometer-alt me-1"></i>{{ __('custom.Dashboard') }}
                                 </a>
+
+                                <div class="dropdown-divider"></div>
 
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
                                                  document.getElementById('logout-form').submit();">
-                                    {{ __('custom.Logout') }}
+                                    <i class="fas fa-sign-out-alt me-1"></i>{{ __('custom.Logout') }}
                                 </a>
+
+                                <a class="dropdown-item" href="{{ route('carte.update') }}">
+                                    {{ __('custom.refreshDB') }}
+                                </a>
+
+                                @if(Auth::admin())
+                                    <div class="dropdown-divider"></div>
+                                    <h6 class="dropdown-header">
+                                        <i class="fas fa-shield-alt me-1"></i>Amministrazione
+                                    </h6>
+                                    <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                                        <i class="fas fa-tachometer-alt me-1"></i>Dashboard Admin
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('users.index') }}">
+                                        <i class="fas fa-users me-1"></i>Gestione Utenti
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('query') }}">
+                                        <i class="fas fa-database me-1"></i>{{ __('custom.query') }}
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('admin.logs') }}">
+                                        <i class="fas fa-file-alt me-1"></i>Gestione Logs
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('admin.errors') }}">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>Gestione Errori
+                                    </a>
+                                @endif
 
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                     @csrf
@@ -112,22 +173,42 @@
                 <div class="row">
                     <div class="col text-center">
                         <p>{{ __("custom.upperFooter") }}</p>
-                        <p>{{ __("custom.lowerFooter") }} <a href="/docs/tos">Terms of Service<a>.</p>
+                        <p>
+                            {{ __("custom.lowerFooter") }}
+                            <small class="text-muted text-uppercase">
+                                <a href="/docs/tos">Terms of Service</a>
+                            </small>.
+                        </p>
                     </div>
                 </div>
             </div>
             <div class="container">
                 <div class="row">
-                    <div class="col text-center">
+                    <div class="col-6 text-center">
                         <p>
                             Created by 
                             <small class="text-muted text-uppercase">
-                                Mandich Riccardo
+                                <a href="https://github.com/RickyMandich" target="_blank" rel="author noopener noreferrer">Mandich Riccardo</a>
                             </small>
                             <br>
                             with
                             <small class="text-muted text-uppercase">
-                                <a href="https://laravel.com/docs/12.x">laravel</a>
+                                <a href="https://laravel.com/docs/12.x" target="_blank" rel="noopener noreferrer">laravel</a>
+                            </small>
+                        </p>
+                    </div>
+                    <div class="col-6 text-center">
+                        <p>
+                            {!! __("custom.contactMail") !!}
+                            <br>
+                            {{ __("custom.documentazione") }}
+                            <small class="text-muted text-uppercase">
+                                <a href="{{ route('documentazione') }}">{{__("custom.Documentazione")}}</a>
+                            </small>
+                            <br>
+                            {{ __("custom.documentazione") }}
+                            <small class="text-muted text-uppercase">
+                                <a href="{{ route('guida.avanzata') }}">{{__("custom.Guida Avanzata")}}</a>
                             </small>
                         </p>
                     </div>
@@ -135,6 +216,13 @@
             </div>
         </footer>
     </div>
+
+    @vite('resources/js/alpinejs-config.js')
+    @livewireScripts
+    @stack('scripts')
+    @yield('script')
 </body>
-@yield('script')
+@yield('style')
 </html>
+@yield("php")
+

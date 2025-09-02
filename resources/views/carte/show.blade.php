@@ -1,6 +1,7 @@
 @extends('layouts.app')
+@section('title', $carta->snippet ?? "$espansione-$numero")
 @section('content')
-    @if($find)
+    @if($carta)
         <div class="container">
             <div class="card mt-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -96,15 +97,19 @@
                 
                 <div class="card-footer">
                     <div class="d-flex justify-content-between">
-                        <a href="/carta/{{ $carta->espansione }}/{{ $carta->numero-1 }}" class="btn btn-secondary align-top">
-                            &larr;Back
-                        </a>
-                        <a href="/carte" class="btn btn-secondary align-middle">
+                        @if($back)
+                            <a href="/carta/{{ $back->espansione }}/{{ $back->numero }}" class="btn btn-secondary align-top">
+                                &larr;{{ __("custom.back") }} ({{ $back->snippet }})
+                            </a>
+                        @endif
+                        <a href="/carte" class="btn btn-primary align-middle">
                             Torna alla lista
                         </a>
-                        <a href="/carta/{{ $carta->espansione }}/{{ $carta->numero+1 }}" class="btn btn-secondary align-bottom">
-                            Next&rarr;
-                        </a>
+                        @if($next)
+                            <a href="/carta/{{ $next->espansione }}/{{ $next->numero }}" class="btn btn-secondary align-bottom">
+                                {{ __("custom.next") }} ({{ $next->snippet }})&rarr;
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>

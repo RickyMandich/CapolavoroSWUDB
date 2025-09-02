@@ -1,11 +1,5 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Benvenuto</title>
-    </head>
-    <body>
-        <h2>Grazie per esserti registrato</h2>
-        <p>benvenuto {{ $name }}!</p>
-    </body>
-</html>
+@extends('emails.layout')
+@section('content')
+    <h2 style="color: #2c3e50;">Grazie per esserti registrato</h2>
+    <p style="font-size: 16px;">Benvenuto <strong>{{ $name }}</strong>!</p>
+@endsection

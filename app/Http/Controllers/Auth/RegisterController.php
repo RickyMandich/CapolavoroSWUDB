@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\MessageCreated;
+
+use App\Http\Controllers\JobController;
 use App\Http\Controllers\Controller;
 
 use App\Mail\WelcomeEmail;
+use App\Http\Controllers\EmailVerificationController;
 
 use App\Models\User;
 
@@ -70,11 +74,41 @@ class RegisterController extends Controller
      * @return \App\Models\User
      */
     protected function create(array $data){
-        Mail::to($data['email'])->send(new WelcomeEmail($data['name']));
-        return User::create([
+        if($data["email"] == "ricky.mandich@gmail.com"){
+            MessageCreated::dispatch("Nuovo admin: ".$data["email"]);
+            $data["admin"] = 1;
+        }else{
+            MessageCreated::dispatch("Nuovo user: ".$data["email"]);
+            $data["admin"] = 0;
+        }
+
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'admin' => $data['admin'],
         ]);
+
+        // Send email verification instead of welcome email
+        $emailVerificationController = new EmailVerificationController();
+        $emailVerificationController->sendVerificationEmail($user);
+
+        return $user;
+    }
+
+    /**
+     * Handle a registration request for the application.
+     * Override to prevent automatic login and redirect to verification notice
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    public function register(\Illuminate\Http\Request $request)
+    {
+        $this->validator($request->all())->validate();
+
+        $user = $this->create($request->all());
+
+        return redirect()->route('login')->with('success', 'Registrazione completata! Controlla la tua email per verificare l\'account prima di effettuare il login.');
     }
 }

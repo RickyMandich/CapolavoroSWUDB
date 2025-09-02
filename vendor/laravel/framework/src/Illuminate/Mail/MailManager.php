@@ -2,6 +2,7 @@
 
 namespace Illuminate\Mail;
 
+use App\Events\MessageCreated;
 use Aws\Ses\SesClient;
 use Aws\SesV2\SesV2Client;
 use Closure;
